@@ -1,11 +1,11 @@
 <script setup>
+import { onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
+import { useCurrentPageStore } from "../stores/pageStore.js";
+import { RouterLink } from "vue-router";
 import {
   Pagination,
-  PaginationEllipsis,
-  PaginationFirst,
-  PaginationLast,
   PaginationList,
-  PaginationListItem,
   PaginationNext,
   PaginationPrev,
 } from "@/components/ui/pagination";
@@ -20,6 +20,46 @@ import {
 } from "@/components/ui/card";
 import { Input } from "./ui/input";
 // import RepositoryListSkeleton from "./skeletons/RepositoryListSkeleton";
+
+const pageStore = useCurrentPageStore();
+const { page, totalPages } = storeToRefs(pageStore);
+
+// function hanldePrev () {
+//   pageStore.handlePrevPage()
+// }
+
+// function hanldeNext () {
+//   pageStore.handleNextPage()
+// }
+
+async function fetchRepositories() {
+  try {
+    const response = await fetch(`https://api.github.com/users/stan015/repos`, {
+      headers: {
+        Authorization: import.meta.env.VITE_REACT_APP_GITHUB_TOKEN
+          ? `token ${import.meta.env.VITE_REACT_APP_GITHUB_TOKEN}`
+          : undefined,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch repositories");
+    }
+
+    const data = await response.json();
+    repositories.value = data;
+
+    totalPages.value = Math.ceil(data.length / reposPerPage.value);
+    // console.log(repositories.value[8])
+    // console.log(data)
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+onMounted(() => {
+  fetchRepositories();
+});
 </script>
 
 <template>
@@ -54,9 +94,6 @@ import { Input } from "./ui/input";
       className="flex flex-col items-center max-md:w-4/5 max-lg:w-[90%] lg:w-[90%] md:border-none"
     >
       <CardHeader className="mb-4">
-        {/* {error &&
-        <div>Error: {error}</div>
-        } */}
         <CardTitle
           className="text-3xl text-center mb-2 max-sm:text-2xl uppercase"
         >
@@ -68,65 +105,50 @@ import { Input } from "./ui/input";
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-center h-full w-full">
-        {/* {noRepoName &&
-        <p>No Repository with this name.</p>
-        } */}
         <ul
           className="flex w-full justify-center text-center gap-4 h-full flex-wrap"
         >
-          {displayedRepositories.map((repo) => (
-          <li key="{repo.id}" className=" w-[20rem] p-1 text-lg">
+          <li
+            v-for="repo in repositories"
+            :key="repo.id"
+            className=" w-[20rem] p-1 text-lg"
+          >
             <!-- <p className="text-sm w-3/4 max-sm:w-full text-gray-400 pb-2 text-balance pointer-events-none"></p> -->
-            <!-- <Link
-                  className="flex flex-col items-center justify-center gap-1 h-full border-border border-2 rounded-sm transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700"
-                  to={`/repositories/${repo.name}?page=${page}`}
-                >
-                  {repo.name}
-                  {repo.description && (
-                    
-                    <p className="text-sm  text-gray-400 pb-2 px-1 text-balance pointer-events-none">
-                      {repo.description}
-                    </p>
-                  )}
-                  <p className="text-sm  text-gray-400 pb-2 text-balance pointer-events-none">
-                    {repo.language}
-                  </p>
-                </Link> -->
+            <RouterLink
+              className="flex flex-col items-center justify-center gap-1 h-full border-border border-2 rounded-sm transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700"
+              :to="`/repositories/${repo.name}?page=${page}`"
+            >
+              {{ repo.name }}
+              <p
+                className="text-sm  text-gray-400 pb-2 px-1 text-balance pointer-events-none"
+                v-if="repo.description"
+              >
+                {{ repo.description }}
+              </p>
+              <p
+                className="text-sm  text-gray-400 pb-2 text-balance pointer-events-none"
+              >
+                {{ repo.language }}
+              </p>
+            </RouterLink>
           </li>
-          ))}
         </ul>
       </CardContent>
       <CardFooter>
         <Pagination
-          v-slot="{ page }"
-          :total="100"
+          :total="totalPages"
           :sibling-count="1"
           show-edges
-          :default-page="2"
+          :default-page="1"
         >
-          <PaginationList v-slot="{ items }" class="flex items-center gap-1">
-            <PaginationFirst />
-            <PaginationPrev />
-
-            <template v-for="(item, index) in items">
-              <PaginationListItem
-                v-if="item.type === 'page'"
-                :key="index"
-                :value="item.value"
-                as-child
-              >
-                <Button
-                  class="w-10 h-10 p-0"
-                  :variant="item.value === page ? 'default' : 'outline'"
-                >
-                  {{ item.value }}
-                </Button>
-              </PaginationListItem>
-              <PaginationEllipsis v-else :key="item.type" :index="index" />
-            </template>
-
-            <PaginationNext />
-            <PaginationLast />
+          <PaginationList class="flex items-center gap-1">
+            <PaginationPrev @click="pageStore.handlePrevPage" />
+            <PaginationListItem>
+              <Button>
+                {{ page }}
+              </Button>
+            </PaginationListItem>
+            <PaginationNext @click="pageStore.handleNextPage" />
           </PaginationList>
         </Pagination>
       </CardFooter>
@@ -134,26 +156,26 @@ import { Input } from "./ui/input";
     <footer
       className="flex flex-col w-full h-[11rem] items-center self-end justify-center gap-6 mt-4 border-t-[1px] border-t-slate-800 p-2"
     >
-      <div className="flex w-full gap-6 text-[0.7rem] justify-center">
-        <Link
+      <!-- <div className="flex w-full gap-6 text-[0.7rem] justify-center"> -->
+      <!-- <Link
           className="bg-primary p-2 text-center hover:bg-violet-800 transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700 cursor-pointer rounded-sm w-[8rem]"
           onClick="{testErrorBoundary}"
         >
           Test Error Boundary
-        </Link>
-        <!-- <Link
+        </Link> -->
+      <!-- <Link
             className="bg-primary p-2 text-center hover:bg-violet-800transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700 cursor-pointer rounded-sm w-[8rem]"
             to={"/notfound"}
           >
             Test 404 page
           </Link> -->
-      </div>
+      <!-- </div> -->
       <div className="flex w-full justify-around">
         <p className="text-center max-sm:w-1/2 max-sm:text-sm">
-          {`"Everyone's got a blank page and a pen 🖊️"`}
+          "Everyone's got a blank page and a pen 🖊️"
         </p>
         <span className="text-center max-sm:w-1/2 max-sm:text-sm">
-          &copy;{` Stanley Azi ${new Date().getFullYear()}`}
+          &copy;{{ ` Stanley Azi ${new Date().getFullYear()}` }}
         </span>
       </div>
     </footer>
