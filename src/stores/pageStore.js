@@ -2,8 +2,12 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useCurrentPageStore = defineStore('currentPage', () => {
-  const page = ref(4)
-  const totalPages = ref(4);
+  const page = ref(1)
+  const totalPages = ref();
+
+  const setTotalPages = (totalPages) => {
+    totalPages.value = totalPages;
+  }
 
   const handlePrevPage = () => {
     if (page.value > 1) {
@@ -17,5 +21,5 @@ export const useCurrentPageStore = defineStore('currentPage', () => {
     }
   }
 
-  return { page, totalPages, handlePrevPage, handleNextPage }
+  return { page, totalPages, setTotalPages, handlePrevPage, handleNextPage }
 })

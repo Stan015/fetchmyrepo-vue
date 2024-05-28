@@ -1,7 +1,8 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, watch, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useCurrentPageStore } from "../stores/pageStore.js";
+import { useRepoStore } from "../stores/repoStore.js";
 import { RouterLink } from "vue-router";
 import {
   Pagination,
@@ -24,13 +25,8 @@ import { Input } from "./ui/input";
 const pageStore = useCurrentPageStore();
 const { page, totalPages } = storeToRefs(pageStore);
 
-// function hanldePrev () {
-//   pageStore.handlePrevPage()
-// }
-
-// function hanldeNext () {
-//   pageStore.handleNextPage()
-// }
+const repoStore = useRepoStore()
+const { repositories, reposPerPage } = storeToRefs(repoStore)
 
 async function fetchRepositories() {
   try {
@@ -50,8 +46,7 @@ async function fetchRepositories() {
     repositories.value = data;
 
     totalPages.value = Math.ceil(data.length / reposPerPage.value);
-    // console.log(repositories.value[8])
-    // console.log(data)
+
   } catch (error) {
     console.log(error.message);
   }
@@ -59,6 +54,25 @@ async function fetchRepositories() {
 
 onMounted(() => {
   fetchRepositories();
+});
+
+const displayedReposPerPage = computed(() => {
+  const startIndex = (page.value - 1) * reposPerPage.value;
+  const endIndex = page.value * reposPerPage.value;
+
+  return repositories.value.slice(startIndex, endIndex);
+});
+
+watch(displayedReposPerPage, (newVal) => {
+  console.log('Displayed Repositories:', newVal);
+});
+
+watch(repositories, (newVal) => {
+  console.log('Repositories:', newVal);
+});
+
+watch(page, (newVal) => {
+  console.log('Page:', newVal);
 });
 </script>
 
@@ -109,14 +123,14 @@ onMounted(() => {
           className="flex w-full justify-center text-center gap-4 h-full flex-wrap"
         >
           <li
-            v-for="repo in repositories"
+            v-for="repo in displayedReposPerPage"
             :key="repo.id"
             className=" w-[20rem] p-1 text-lg"
           >
             <!-- <p className="text-sm w-3/4 max-sm:w-full text-gray-400 pb-2 text-balance pointer-events-none"></p> -->
             <RouterLink
               className="flex flex-col items-center justify-center gap-1 h-full border-border border-2 rounded-sm transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700"
-              :to="`/repositories/${repo.name}?page=${page}`"
+              :to="`/${repo.owner.login}/repositories/${repo.name}/page=${page}`"
             >
               {{ repo.name }}
               <p
@@ -131,6 +145,7 @@ onMounted(() => {
                 {{ repo.language }}
               </p>
             </RouterLink>
+            
           </li>
         </ul>
       </CardContent>
@@ -141,14 +156,14 @@ onMounted(() => {
           show-edges
           :default-page="1"
         >
-          <PaginationList class="flex items-center gap-1">
-            <PaginationPrev @click="pageStore.handlePrevPage" />
+          <PaginationList class="flex items-center gap-2">
+            <PaginationPrev class="w-24 p-2 pr-4" @click="pageStore.handlePrevPage" />
             <PaginationListItem>
               <Button>
                 {{ page }}
               </Button>
             </PaginationListItem>
-            <PaginationNext @click="pageStore.handleNextPage" />
+            <PaginationNext class="w-24 p-2 pl-4" @click="pageStore.handleNextPage" />
           </PaginationList>
         </Pagination>
       </CardFooter>

@@ -20,10 +20,9 @@ const props = defineProps({
 
 <template>
   <!-- <PaginationPrev v-bind="delegatedProps"> -->
-    <Button :class="cn('w-10 h-10 p-0', props.class)" variant="outline" @click="handleClick">
-      <slot>
+    <Button :class="cn('w-10 h-10 p-0', props.class)" variant="outline">
         <ChevronLeft class="h-4 w-4" />
-      </slot>
+        Previous
     </Button>
   <!-- </PaginationPrev> -->
 </template>

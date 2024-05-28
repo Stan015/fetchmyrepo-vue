@@ -10,7 +10,7 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/repositories/:repoName',
+      path: '/:userLogin/repositories/:repoName/:currentPage',
       name: 'repository',
       component: () => import('../views/RepositoryDetailsView.vue')
     }
