@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, watch, computed } from "vue";
 import { storeToRefs } from "pinia";
-import { useCurrentPageStore } from "../stores/pageStore.js";
-import { useRepoStore } from "../stores/repoStore.js";
+import { useCurrentPageStore } from "@/stores/pageStore.js";
+import { useRepoStore } from "@/stores/repoStore.js";
 import { RouterLink } from "vue-router";
 import {
   Pagination,
@@ -25,8 +25,8 @@ import { Input } from "./ui/input";
 const pageStore = useCurrentPageStore();
 const { page, totalPages } = storeToRefs(pageStore);
 
-const repoStore = useRepoStore()
-const { repositories, reposPerPage } = storeToRefs(repoStore)
+const repoStore = useRepoStore();
+const { repositories, reposPerPage } = storeToRefs(repoStore);
 
 async function fetchRepositories() {
   try {
@@ -46,7 +46,6 @@ async function fetchRepositories() {
     repositories.value = data;
 
     totalPages.value = Math.ceil(data.length / reposPerPage.value);
-
   } catch (error) {
     console.log(error.message);
   }
@@ -64,15 +63,15 @@ const displayedReposPerPage = computed(() => {
 });
 
 watch(displayedReposPerPage, (newVal) => {
-  console.log('Displayed Repositories:', newVal);
+  console.log("Displayed Repositories:", newVal);
 });
 
 watch(repositories, (newVal) => {
-  console.log('Repositories:', newVal);
+  console.log("Repositories:", newVal);
 });
 
 watch(page, (newVal) => {
-  console.log('Page:', newVal);
+  console.log("Page:", newVal);
 });
 </script>
 
@@ -130,7 +129,7 @@ watch(page, (newVal) => {
             <!-- <p className="text-sm w-3/4 max-sm:w-full text-gray-400 pb-2 text-balance pointer-events-none"></p> -->
             <RouterLink
               className="flex flex-col items-center justify-center gap-1 h-full border-border border-2 rounded-sm transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700"
-              :to="`/${repo.owner.login}/repositories/${repo.name}/page=${page}`"
+              :to="`repos/${repo.owner.login}/${repo.name}/page=${page}`"
             >
               {{ repo.name }}
               <p
@@ -145,7 +144,6 @@ watch(page, (newVal) => {
                 {{ repo.language }}
               </p>
             </RouterLink>
-            
           </li>
         </ul>
       </CardContent>
@@ -157,13 +155,19 @@ watch(page, (newVal) => {
           :default-page="1"
         >
           <PaginationList class="flex items-center gap-2">
-            <PaginationPrev class="w-24 p-2 pr-4" @click="pageStore.handlePrevPage" />
+            <PaginationPrev
+              class="w-24 p-2 pr-4"
+              @click="pageStore.handlePrevPage"
+            />
             <PaginationListItem>
               <Button>
                 {{ page }}
               </Button>
             </PaginationListItem>
-            <PaginationNext class="w-24 p-2 pl-4" @click="pageStore.handleNextPage" />
+            <PaginationNext
+              class="w-24 p-2 pl-4"
+              @click="pageStore.handleNextPage"
+            />
           </PaginationList>
         </Pagination>
       </CardFooter>
