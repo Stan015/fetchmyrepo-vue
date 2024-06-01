@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, watch, computed } from "vue";
+import { onMounted, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useCurrentPageStore } from "@/stores/pageStore.js";
 import { useRepoStore } from "@/stores/repoStore.js";
@@ -26,9 +26,8 @@ const pageStore = useCurrentPageStore();
 const { page, totalPages } = storeToRefs(pageStore);
 
 const repoStore = useRepoStore();
-const { isLoading, repositories, reposPerPage } = storeToRefs(repoStore);
+const { isLoading, filteredRepos, reposPerPage, searchQuery, filterQuery } = storeToRefs(repoStore);
 const {fetchRepositories} = repoStore;
-
 
 onMounted(() => {
   fetchRepositories();
@@ -38,20 +37,20 @@ const displayedReposPerPage = computed(() => {
   const startIndex = (page.value - 1) * reposPerPage.value;
   const endIndex = page.value * reposPerPage.value;
 
-  return repositories.value.slice(startIndex, endIndex);
+  return filteredRepos.value.slice(startIndex, endIndex);
 });
 
-watch(displayedReposPerPage, (newVal) => {
-  console.log("Displayed Repositories:", newVal);
-});
+// watch(displayedReposPerPage, (newVal) => {
+//   console.log("Displayed Repositories:", newVal);
+// });
 
-watch(repositories, (newVal) => {
-  console.log("Repositories:", newVal);
-});
+// watch(repositories, (newVal) => {
+//   console.log("Repositories:", newVal);
+// });
 
-watch(page, (newVal) => {
-  console.log("Page:", newVal);
-});
+// watch(page, (newVal) => {
+//   console.log("Page:", newVal);
+// });
 </script>
 
 <template>
@@ -64,13 +63,11 @@ watch(page, (newVal) => {
       <Input
         type="search"
         placeholder="Search repo by name..."
-        value="{searchQuery}"
-        onChange="{handleSearchChange}"
+        v-model="searchQuery"
       />
       <select
-        className="w-[5rem] h-[2.35rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border-[1px] transition-all border-border px-1 text-sm rounded-sm bg-primary hover:bg-violet-800 text-cent text-gray-200"
-        value="{languageFilter}"
-        onChange="{handleLanguageFilter}"
+        v-model="filterQuery"
+        className="w-[5rem] h-[2.35rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border-[1px] transition-all border-border px-1 text-sm rounded-sm bg-primary hover:bg-violet-800 text-center text-gray-200"
         tabIndex="0"
       >
         <option value="">Filter</option>

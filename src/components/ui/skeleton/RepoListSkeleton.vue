@@ -26,13 +26,13 @@ const props = defineProps({
           <div :class="cn('animate-pulse bg-muted h-[6rem] border-border border-2 rounded-sm p-1 w-[20rem]', props.class)" />
           <div :class="cn('animate-pulse bg-muted h-[6rem] border-border border-2 rounded-sm p-1 w-[20rem]', props.class)" />
         </div>
-        <div className="flex gap-4 justify-center items-center">
+        <!-- <div className="flex gap-4 justify-center items-center">
           <div :class="cn('animate-pulse bg-muted w-[5rem] h-[2.5rem] rounded-sm p-1', props.class)" />
           <div :class="cn('animate-pulse bg-muted w-[2rem] h-[2.5rem] rounded-sm p-1', props.class)" />
           <div :class="cn('animate-pulse bg-muted w-[5rem] h-[2.5rem] rounded-sm p-1', props.class)" />
-        </div>
+        </div> -->
       </div>
-      <div className="flex flex-col w-full h-[10rem] items-center justify-center gap-4 mt-4 p-2">
+      <!-- <div className="flex flex-col w-full h-[10rem] items-center justify-center gap-4 mt-4 p-2">
         <div className="flex w-full gap-6 text-[0.7rem] justify-center">
           <div :class="cn('animate-pulse bg-muted w-[10rem] max-sm:w-[8rem] h-10 rounded-sm p-1', props.class)" />
           <div :class="cn('animate-pulse bg-muted w-[10rem] max-sm:w-[8rem] h-10 rounded-sm p-1', props.class)" />
@@ -41,6 +41,6 @@ const props = defineProps({
           <div :class="cn('animate-pulse bg-muted w-[10rem] max-sm:w-[8rem] h-10 rounded-sm p-1', props.class)" />
           <div :class="cn('animate-pulse bg-muted w-[10rem] max-sm:w-[8rem] h-10 rounded-sm p-1', props.class)" />
         </div>
-      </div>
+      </div> -->
     </div>
 </template>

@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useCurrentPageStore } from "@/stores/pageStore.js";
 
 export const useRepoStore = defineStore("repoStore", () => {
@@ -8,6 +8,25 @@ export const useRepoStore = defineStore("repoStore", () => {
   const repoDetails = ref(null);
   const isLoading = ref(false);
   const repoName = ref(null);
+  const searchQuery = ref("");
+  const filterQuery = ref("");
+
+  const filteredRepos = computed(() => {
+    return repositories.value.filter((repo) => {
+      const languageMatch =
+        repo.language &&
+        repo.language.toLowerCase().includes(filterQuery.value.toLowerCase());
+
+      const nameMatch =
+        repo.name &&
+        repo.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+
+      return (
+        (filterQuery.value ? languageMatch : true) &&
+        (searchQuery.value ? nameMatch : true)
+      );
+    });
+  });
 
   const pageStore = useCurrentPageStore();
   const { totalPages } = storeToRefs(pageStore);
@@ -72,11 +91,13 @@ export const useRepoStore = defineStore("repoStore", () => {
   };
 
   return {
-    repositories,
+    filteredRepos,
     reposPerPage,
     repoDetails,
     isLoading,
     repoName,
+    searchQuery,
+    filterQuery,
     fetchRepositories,
     fetchRepoDetails,
   };
