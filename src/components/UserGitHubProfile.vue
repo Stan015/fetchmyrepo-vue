@@ -39,36 +39,37 @@ onMounted(() => {
 </script>
 
 <template>
-  <div className="flex flex-col w-full items-center gap-6 pt-10">
+  <div class="flex flex-col w-full items-center gap-6 pt-10">
     <Card
-      className="flex flex-col items-center max-md:w-4/5 max-lg:w-3/5 lg:w-3/6"
+      class="flex flex-col items-center max-md:w-4/5 max-lg:w-3/5 lg:w-3/6"
     >
-      <CardHeader className="flex flex-row gap-4 justify-center ">
-        <div className="">
-          <div className="flex gap-4 items-center justify-center mb-2">
+      <CardHeader class="flex flex-row gap-4 justify-center ">
+        <div class="">
+          <div class="flex gap-4 items-center justify-center mb-2">
             <Avatar class="w-10 h-10">
               <AvatarImage :src="userProfile.avatar_url" />
               <AvatarFallback>SA</AvatarFallback>
             </Avatar>
-            <CardTitle className="">{{ userProfile.name }}</CardTitle>
+            <CardTitle class="">{{ userProfile.name }}</CardTitle>
           </div>
-          <CardDescription className="text-center text-balance">
+          <CardDescription class="text-center text-balance">
+            {{ userProfile.bio }}
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="flex gap-4 justify-center">
-        <p className="text-center max-sm:text-sm">
+      <CardContent class="flex gap-4 justify-center">
+        <p class="text-center max-sm:text-sm">
           Public Repositories: {{ userProfile.public_repos }}
         </p>
-        <p className="text-center max-sm:text-sm">
+        <p class="text-center max-sm:text-sm">
           Followers: {{ userProfile.followers }}
         </p>
       </CardContent>
       <CardFooter
-        className="flex w-full gap-4 items-center justify-center text-center"
+        class="flex w-full gap-4 items-center justify-center text-center"
       >
         <p
-          className="transition-all text-[1.8rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1  rounded-sm hover:bg-violet-800 cursor-pointer"
+          class="transition-all text-[1.8rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1  rounded-sm hover:bg-violet-800 cursor-pointer"
           @click="() => (window.location.href = `mailto:${userProfile.email}`)"
           tabIndex="0"
         >
@@ -78,7 +79,7 @@ onMounted(() => {
           href="https://twitter.com/StanleyAzi"
           target="_blank"
           rel="noopener noreferrer"
-          className="transition-all text-[1.3rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm hover:bg-violet-800 p-1"
+          class="transition-all text-[1.3rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm hover:bg-violet-800 p-1"
         >
           <Icon icon="prime:twitter" />
         </a>
@@ -86,7 +87,7 @@ onMounted(() => {
           href="https://www.linkedin.com/in/stanley-azi-475044217/"
           target="_blank"
           rel="noopener noreferrer"
-          className="transition-all text-[1.8rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2  rounded-sm hover:bg-violet-800 p-[1px]"
+          class="transition-all text-[1.7rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2  rounded-sm hover:bg-violet-800 p-[1px]"
         >
           <Icon icon="ri:linkedin-fill" />
         </a>

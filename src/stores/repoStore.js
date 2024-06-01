@@ -1,6 +1,7 @@
 import { defineStore, storeToRefs } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useCurrentPageStore } from "@/stores/pageStore.js";
+import { useRoute, useRouter } from "vue-router";
 
 export const useRepoStore = defineStore("repoStore", () => {
   const repositories = ref([]);
@@ -11,8 +12,24 @@ export const useRepoStore = defineStore("repoStore", () => {
   const searchQuery = ref("");
   const filterQuery = ref("");
 
+  const pageStore = useCurrentPageStore();
+  const { page, totalPages } = storeToRefs(pageStore);
+
+  const route = useRoute();
+  const router = useRouter();
+
+  if (route.params.pageNumber) {
+    page.value = parseInt(route.params.pageNumber)
+  }
+
+  watch(page, (newPage) => {
+    router.push({ name: 'page', params: { pageNumber: newPage } });
+  });
+
   const filteredRepos = computed(() => {
     return repositories.value.filter((repo) => {
+        page.value = 1;
+
       const languageMatch =
         repo.language &&
         repo.language.toLowerCase().includes(filterQuery.value.toLowerCase());
@@ -27,9 +44,6 @@ export const useRepoStore = defineStore("repoStore", () => {
       );
     });
   });
-
-  const pageStore = useCurrentPageStore();
-  const { totalPages } = storeToRefs(pageStore);
 
   async function fetchRepositories() {
     isLoading.value = true;
