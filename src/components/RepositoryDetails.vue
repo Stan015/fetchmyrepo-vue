@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { RouterLink, useRoute } from "vue-router";
 import { useRepoStore } from "@/stores/repoStore.js";
@@ -12,63 +12,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import RepoDetailsSekeleton from "@/components/ui/skeleton/RepoDetailsSekeleton.vue";
+import RepoDetailsSekeleton from "@/components/ui/skeleton/RepoDetailsSekeleton.vue";
 
 const repoStore = useRepoStore();
-const { repoDetails, isLoading } = storeToRefs(repoStore);
-
+const { repoDetails, isLoading, repoName } = storeToRefs(repoStore);
+const { fetchRepoDetails } = repoStore;
 
 const route = useRoute();
-const repoName = ref(route.params.repoName);
-
-// console.log()
-
-const fetchRepoDetails = async () => {
-  isLoading.value = true;
-
-  try {
-    const response = await fetch(
-      `https://api.github.com/repos/Stan015/${repoName.value}`,
-      {
-        headers: {
-          Authorization: import.meta.env.VITE_REACT_APP_GITHUB_TOKEN
-            ? `token ${import.meta.env.VITE_REACT_APP_GITHUB_TOKEN}`
-            : undefined,
-        },
-      }
-    );
-
-    const data = await response.json();
-
-    repoDetails.value = data;
-  } catch (error) {
-    console.log(error.message);
-  }
-  isLoading.value = false;
-};
+repoName.value = route.params.repoName;
 
 watch(
   () => route.params,
   (newParams) => {
     repoName.value = newParams.repoName;
+    fetchRepoDetails();
   }
-);
-
-watch(
-  () => route.params,
-  async () => {
-    isLoading.value = true;
-    await fetchRepoDetails();
-  },
-  { immediate: true }
 );
 
 onMounted(fetchRepoDetails());
 </script>
 
 <template>
-  <!-- <RepoDetailsSekeleton v-if="isLoading" /> -->
-  <section v-if="repoDetails" className="flex w-full pt-20 justify-center">
+  <RepoDetailsSekeleton v-if="isLoading && !repoDetails" />
+  <section
+    v-else-if="!isLoading && repoDetails"
+    className="flex w-full pt-20 justify-center"
+  >
     <Card
       className="flex flex-col items-center max-md:w-4/5 max-lg:w-3/5 lg:w-3/6 mb-10"
     >
@@ -141,5 +110,6 @@ onMounted(fetchRepoDetails());
       </CardFooter>
     </Card>
   </section>
-    <!-- <RepoDetailsSekeleton v-else /> -->
+  <div>Is Loading: {{ isLoading }}</div>
+  <div>Repo Details: {{ repoDetails.name }}</div>
 </template>

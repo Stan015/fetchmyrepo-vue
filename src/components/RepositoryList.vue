@@ -20,36 +20,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "./ui/input";
-// import RepositoryListSkeleton from "./skeletons/RepositoryListSkeleton";
+import RepoListSkeleton from "@/components/ui/skeleton/RepoListSkeleton.vue";
 
 const pageStore = useCurrentPageStore();
 const { page, totalPages } = storeToRefs(pageStore);
 
 const repoStore = useRepoStore();
-const { repositories, reposPerPage } = storeToRefs(repoStore);
+const { isLoading, repositories, reposPerPage } = storeToRefs(repoStore);
+const {fetchRepositories} = repoStore;
 
-async function fetchRepositories() {
-  try {
-    const response = await fetch(`https://api.github.com/users/stan015/repos`, {
-      headers: {
-        Authorization: import.meta.env.VITE_REACT_APP_GITHUB_TOKEN
-          ? `token ${import.meta.env.VITE_REACT_APP_GITHUB_TOKEN}`
-          : undefined,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch repositories");
-    }
-
-    const data = await response.json();
-    repositories.value = data;
-
-    totalPages.value = Math.ceil(data.length / reposPerPage.value);
-  } catch (error) {
-    console.log(error.message);
-  }
-}
 
 onMounted(() => {
   fetchRepositories();
@@ -76,8 +55,8 @@ watch(page, (newVal) => {
 </script>
 
 <template>
-  <div
-    className="grid grid-cols-1 w-full justify-items-center min-h-full gap-6 pt-10"
+  <main
+    className="flex flex-col w-full place-items-center justify-between min-h-full gap-6 pt-10"
   >
     <div
       className="flex gap-2 w-full items-center h-max max-md:w-4/5 max-lg:w-3/5 lg:w-3/6"
@@ -104,7 +83,7 @@ watch(page, (newVal) => {
       <!-- <Link className="w-[8.3rem] leading-[2.3rem] whitespace-nowrap text-center ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border-[1px] transition-all border-border px-1 text-sm rounded-sm bg-primary hover:bg-violet-800 text-gray-200" to={'/repositories/new'}>&#x2b; New Repo</Link>  -->
     </div>
     <Card
-      className="flex flex-col items-center max-md:w-4/5 max-lg:w-[90%] lg:w-[90%] md:border-none"
+      className="flex flex-col items-center justify-between min-h-full max-md:w-4/5 max-lg:w-[90%] lg:w-[90%] md:border-none"
     >
       <CardHeader className="mb-4">
         <CardTitle
@@ -117,7 +96,8 @@ watch(page, (newVal) => {
           details.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex justify-center h-full w-full">
+      <RepoListSkeleton v-if="isLoading" />
+      <CardContent v-else className="flex justify-center h-full w-full">
         <ul
           className="flex w-full justify-center text-center gap-4 h-full flex-wrap"
         >
@@ -172,31 +152,5 @@ watch(page, (newVal) => {
         </Pagination>
       </CardFooter>
     </Card>
-    <footer
-      className="flex flex-col w-full h-[11rem] items-center self-end justify-center gap-6 mt-4 border-t-[1px] border-t-slate-800 p-2"
-    >
-      <!-- <div className="flex w-full gap-6 text-[0.7rem] justify-center"> -->
-      <!-- <Link
-          className="bg-primary p-2 text-center hover:bg-violet-800 transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700 cursor-pointer rounded-sm w-[8rem]"
-          onClick="{testErrorBoundary}"
-        >
-          Test Error Boundary
-        </Link> -->
-      <!-- <Link
-            className="bg-primary p-2 text-center hover:bg-violet-800transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700 cursor-pointer rounded-sm w-[8rem]"
-            to={"/notfound"}
-          >
-            Test 404 page
-          </Link> -->
-      <!-- </div> -->
-      <div className="flex w-full justify-around">
-        <p className="text-center max-sm:w-1/2 max-sm:text-sm">
-          "Everyone's got a blank page and a pen 🖊️"
-        </p>
-        <span className="text-center max-sm:w-1/2 max-sm:text-sm">
-          &copy;{{ ` Stanley Azi ${new Date().getFullYear()}` }}
-        </span>
-      </div>
-    </footer>
-  </div>
+  </main>
 </template>

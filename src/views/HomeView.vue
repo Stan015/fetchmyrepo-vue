@@ -1,9 +1,9 @@
 <script setup>
-import RepositoryList from '../components/RepositoryList.vue'
+import RepositoryList from '@/components/RepositoryList.vue'
+import FooterSection from '@/components/FooterSection.vue'
 </script>
 
 <template>
-  <main>
-    <RepositoryList />
-  </main>
+  <RepositoryList />
+  <FooterSection />
 </template>

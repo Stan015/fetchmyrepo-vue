@@ -57,4 +57,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  #app {
+    @apply min-w-full min-h-svh;
+  }
 }
