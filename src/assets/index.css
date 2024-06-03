@@ -59,6 +59,6 @@
   }
 
   #app {
-    @apply min-w-full min-h-svh;
+    @apply min-w-full min-h-svh flex flex-col;
   }
 }

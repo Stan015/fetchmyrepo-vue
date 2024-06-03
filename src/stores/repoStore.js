@@ -104,6 +104,15 @@ export const useRepoStore = defineStore("repoStore", () => {
     }
   };
 
+  const updatePageFromRoute = () => {
+    const pageNumber = parseInt(route.params.pageNumber);
+    if (!isNaN(pageNumber)) {
+      page.value = pageNumber;
+    } else {
+      page.value = 1;
+    }
+  };
+
   return {
     filteredRepos,
     reposPerPage,
@@ -114,5 +123,6 @@ export const useRepoStore = defineStore("repoStore", () => {
     filterQuery,
     fetchRepositories,
     fetchRepoDetails,
+    updatePageFromRoute
   };
 });

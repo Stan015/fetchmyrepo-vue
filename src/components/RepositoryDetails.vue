@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
-import { RouterLink, useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useRepoStore } from "@/stores/repoStore.js";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,10 +16,17 @@ import RepoDetailsSekeleton from "@/components/ui/skeleton/RepoDetailsSekeleton.
 
 const repoStore = useRepoStore();
 const { repoDetails, isLoading, repoName } = storeToRefs(repoStore);
-const { fetchRepoDetails } = repoStore;
+const { fetchRepoDetails, updatePageFromRoute } = repoStore;
 
 const route = useRoute();
+const router = useRouter();
 repoName.value = route.params.repoName;
+
+watch(route, updatePageFromRoute);
+
+const handleBackToPreviousPage = () => {
+  router.back();
+};
 
 watch(
   () => route.params,
@@ -29,11 +36,14 @@ watch(
   }
 );
 
-onMounted(fetchRepoDetails());
+onMounted(() => {
+  fetchRepoDetails();
+//   updatePageFromRoute();
+});
 </script>
 
 <template>
-  <RepoDetailsSekeleton v-if="isLoading && !repoDetails" />
+  <RepoDetailsSekeleton v-if="isLoading" />
   <section
     v-else-if="!isLoading && repoDetails"
     class="flex w-full pt-20 justify-center"
@@ -42,13 +52,12 @@ onMounted(fetchRepoDetails());
       class="flex flex-col items-center max-md:w-4/5 max-lg:w-3/5 lg:w-3/6 mb-10"
     >
       <CardHeader>
-        <CardTitle
-          class="text-3xl max-sm:text-xl text-center mb-2 uppercase"
-          >Project Name: {{ repoDetails.name }}</CardTitle
-        >
-        <CardDescription class="text-center text-base text-balance">{{
-          repoDetails.description
-        }}</CardDescription>
+        <CardTitle class="text-3xl max-sm:text-xl text-center mb-2 uppercase">
+          Project Name: {{ repoDetails.name }}
+        </CardTitle>
+        <CardDescription class="text-center text-base text-balance">
+          {{ repoDetails.description }}
+        </CardDescription>
       </CardHeader>
       <CardContent
         class="grid w-full grid-cols-2 max-sm:grid-cols-1 items-center text-center gap-4"
@@ -70,26 +79,28 @@ onMounted(fetchRepoDetails());
         </p>
         <p
           v-if="repoDetails.license"
-          class="leading-10 border-border border-2 rounded-sm"
+          class="leading-10 border-border border-2 rounded-sm p-1"
         >
           License: {{ repoDetails.license.name }}
         </p>
-        <RouterLink
+        <a
           v-if="repoDetails.homepage"
-          class="leading-10 border-border border-2 rounded-sm p-1 transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700 hover:border-violet-700"
-          href="{{repoDetails.homepage}}"
+          class="leading-10 border-border border-2 rounded-sm p-1 transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700"
+          :href="repoDetails.homepage"
           target="_blank"
           rel="noopener noreferrer"
-          >Visit Live Site</RouterLink
         >
-        <RouterLink
+          Visit Live Site
+        </a>
+        <a
           v-if="repoDetails.html_url"
           class="leading-10 border-border border-2 rounded-sm p-1 transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700"
-          href="{{repoDetails.html_url}}"
+          :href="repoDetails.html_url"
           target="_blank"
           rel="noopener noreferrer"
-          >Visit Remote Repo</RouterLink
         >
+          Visit Remote Repo
+        </a>
         <p class="leading-10 border-border border-2 rounded-sm p-1">
           Date Created:
           {{ new Date(repoDetails.created_at).toLocaleDateString() }}
@@ -100,9 +111,9 @@ onMounted(fetchRepoDetails());
         </p>
       </CardContent>
 
-      <CardFooter class="">
+      <CardFooter>
         <Button
-          class="bg-primary hover:bg-violet-800 p-2 rounded-md hover:bg-violet-800transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700"
+          class="bg-primary hover:bg-violet-800 p-2 rounded-md transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-violet-700"
           @click="handleBackToPreviousPage"
         >
           Back to repoDetails List
@@ -110,6 +121,4 @@ onMounted(fetchRepoDetails());
       </CardFooter>
     </Card>
   </section>
-  <div>Is Loading: {{ isLoading }}</div>
-  <div>Repo Details: {{ repoDetails.name }}</div>
 </template>

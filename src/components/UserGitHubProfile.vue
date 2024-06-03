@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
+import ProfileDetailsSkeleton from "@/components/ui/skeleton/ProfileDetailsSkeleton.vue"
 import { Icon } from "@iconify/vue";
 import {
   Card,
@@ -12,8 +13,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const userProfile = ref([]);
+const isLoading = ref(false)
 
 const fetchUserGithubProfile = async () => {
+  isLoading.value = true;
+
   try {
     const response = await fetch(`https://api.github.com/users/Stan015`, {
       headers: {
@@ -23,6 +27,10 @@ const fetchUserGithubProfile = async () => {
       },
     });
 
+    if (!response) {
+      throw new Error("failed to fetch user github profile")
+    }
+
     const data = await response.json();
 
     userProfile.value = data;
@@ -30,7 +38,13 @@ const fetchUserGithubProfile = async () => {
     // console.log(userProfile.value)
   } catch (error) {
     console.log(error.message);
+  } finally {
+    isLoading.value = false
   }
+};
+
+const handleEmailClick = () => {
+  window.location.href = `mailto:${userProfile.value.email}`;
 };
 
 onMounted(() => {
@@ -39,7 +53,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col w-full items-center gap-6 pt-10">
+  <ProfileDetailsSkeleton v-if="isLoading" />
+  <div v-else class="flex flex-col w-full items-center gap-6 pt-10">
     <Card
       class="flex flex-col items-center max-md:w-4/5 max-lg:w-3/5 lg:w-3/6"
     >
@@ -47,7 +62,7 @@ onMounted(() => {
         <div class="">
           <div class="flex gap-4 items-center justify-center mb-2">
             <Avatar class="w-10 h-10">
-              <AvatarImage :src="userProfile.avatar_url" />
+              <AvatarImage v-if="userProfile.avatar_url" :src="userProfile.avatar_url" />
               <AvatarFallback>SA</AvatarFallback>
             </Avatar>
             <CardTitle class="">{{ userProfile.name }}</CardTitle>
@@ -70,7 +85,7 @@ onMounted(() => {
       >
         <p
           class="transition-all text-[1.8rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1  rounded-sm hover:bg-violet-800 cursor-pointer"
-          @click="() => (window.location.href = `mailto:${userProfile.email}`)"
+          @click="handleEmailClick"
           tabIndex="0"
         >
           <Icon icon="ic:baseline-email" />

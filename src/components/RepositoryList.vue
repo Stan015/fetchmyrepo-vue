@@ -1,12 +1,12 @@
 <script setup>
-import { onMounted, computed } from "vue";
+import { onMounted, computed, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useCurrentPageStore } from "@/stores/pageStore.js";
 import { useRepoStore } from "@/stores/repoStore.js";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute } from "vue-router";
 import {
   Pagination,
-  PaginationList,
+  // PaginationList,
   PaginationNext,
   PaginationPrev,
 } from "@/components/ui/pagination";
@@ -26,11 +26,13 @@ const pageStore = useCurrentPageStore();
 const { page, totalPages } = storeToRefs(pageStore);
 
 const repoStore = useRepoStore();
-const { isLoading, filteredRepos, reposPerPage, searchQuery, filterQuery } = storeToRefs(repoStore);
-const {fetchRepositories} = repoStore;
+const { isLoading, filteredRepos, reposPerPage, searchQuery, filterQuery } =
+  storeToRefs(repoStore);
+const { fetchRepositories, updatePageFromRoute } = repoStore;
 
 onMounted(() => {
   fetchRepositories();
+  updatePageFromRoute();
 });
 
 const displayedReposPerPage = computed(() => {
@@ -39,6 +41,10 @@ const displayedReposPerPage = computed(() => {
 
   return filteredRepos.value.slice(startIndex, endIndex);
 });
+
+const route = useRoute();
+
+watch(route, updatePageFromRoute);
 
 // watch(displayedReposPerPage, (newVal) => {
 //   console.log("Displayed Repositories:", newVal);
@@ -53,25 +59,25 @@ const displayedReposPerPage = computed(() => {
 // });
 
 const prevBtnStyle = computed(() => {
-      return {
-        'pointer-events-none opacity-30': page.value === 1,
-        'cursor-pointer hover:bg-violet-800': page.value > 1,
-        'bg-primary w-24 p-2 pr-4 transition-all': true,
-      };
-    });
+  return {
+    "pointer-events-none opacity-30": page.value === 1,
+    "cursor-pointer hover:bg-violet-800": page.value > 1,
+    "bg-primary w-24 p-2 pr-4 transition-all": true,
+  };
+});
 
 const nextBtnStyle = computed(() => {
-      return {
-        'pointer-events-none opacity-30': page.value === totalPages.value,
-        'cursor-pointer hover:bg-violet-800': page.value !== totalPages.value,
-        'bg-primary w-24 p-2 pl-4 transition-all': true,
-      };
-    });
+  return {
+    "pointer-events-none opacity-30": page.value === totalPages.value,
+    "cursor-pointer hover:bg-violet-800": page.value !== totalPages.value,
+    "bg-primary w-24 p-2 pl-4 transition-all": true,
+  };
+});
 </script>
 
 <template>
   <main
-    class="flex flex-col w-full place-items-center justify-between min-h-full gap-6 pt-10"
+    class="flex flex-col w-full place-items-center mb-10 justify-between min-h-full gap-6 pt-10"
   >
     <div
       class="flex gap-2 w-full items-center h-max max-md:w-4/5 max-lg:w-3/5 lg:w-3/6"
@@ -93,15 +99,12 @@ const nextBtnStyle = computed(() => {
         <option value="CSS">CSS</option>
         <option value="HTML">HTML</option>
       </select>
-      <!-- <Link class="w-[8.3rem] leading-[2.3rem] whitespace-nowrap text-center ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border-[1px] transition-all border-border px-1 text-sm rounded-sm bg-primary hover:bg-violet-800 text-gray-200" to={'/repositories/new'}>&#x2b; New Repo</Link>  -->
     </div>
     <Card
-      class="flex flex-col items-center justify-between min-h-full max-md:w-4/5 max-lg:w-[90%] lg:w-[90%] md:border-none gap-2"
+      class="flex flex-col items-center justify-between min-h-[35rem] max-md:w-4/5 max-lg:w-[90%] lg:w-[90%] md:border-none gap-2"
     >
       <CardHeader class="mb-4">
-        <CardTitle
-          class="text-3xl text-center mb-2 max-sm:text-2xl uppercase"
-        >
+        <CardTitle class="text-3xl text-center mb-2 max-sm:text-2xl uppercase">
           My Repositories
         </CardTitle>
         <CardDescription class="text-center text-base">
@@ -117,7 +120,7 @@ const nextBtnStyle = computed(() => {
           <li
             v-for="repo in displayedReposPerPage"
             :key="repo.id"
-            class=" w-[20rem] p-1 text-lg"
+            class="w-[20rem] p-1 text-lg"
           >
             <!-- <p class="text-sm w-3/4 max-sm:w-full text-gray-400 pb-2 text-balance pointer-events-none"></p> -->
             <RouterLink
@@ -126,13 +129,13 @@ const nextBtnStyle = computed(() => {
             >
               {{ repo.name }}
               <p
-                class="text-sm  text-gray-400 pb-2 px-1 text-balance pointer-events-none"
+                class="text-sm text-gray-400 pb-2 px-1 text-balance pointer-events-none"
                 v-if="repo.description"
               >
                 {{ repo.description }}
               </p>
               <p
-                class="text-sm  text-gray-400 pb-2 text-balance pointer-events-none"
+                class="text-sm text-gray-400 pb-2 text-balance pointer-events-none"
               >
                 {{ repo.language }}
               </p>
@@ -147,21 +150,21 @@ const nextBtnStyle = computed(() => {
           show-edges
           :default-page="1"
         >
-          <PaginationList class="flex items-center gap-2">
+          <div class="flex items-center gap-2">
             <PaginationPrev
               :class="prevBtnStyle"
               @click="pageStore.handlePrevPage"
             />
-            <PaginationListItem >
+            <div>
               <Button class="bg-secondary">
                 {{ page }}
               </Button>
-            </PaginationListItem>
+            </div>
             <PaginationNext
               :class="nextBtnStyle"
               @click="pageStore.handleNextPage"
             />
-          </PaginationList>
+          </div>
         </Pagination>
       </CardFooter>
     </Card>
