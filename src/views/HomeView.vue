@@ -1,9 +1,12 @@
 <script setup>
-import RepositoryList from '@/components/RepositoryList.vue'
-import FooterSection from '@/components/FooterSection.vue'
+import RepositoryList from "@/components/RepositoryList.vue";
+import FooterSection from "@/components/FooterSection.vue";
+// import ErrorBoundary from "@/components/ErrorBoundary.vue";
 </script>
 
 <template>
-  <RepositoryList />
+  <!-- <ErrorBoundary> -->
+    <RepositoryList />
+  <!-- </ErrorBoundary> -->
   <FooterSection />
 </template>

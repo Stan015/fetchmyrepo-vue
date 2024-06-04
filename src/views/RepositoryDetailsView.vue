@@ -1,7 +1,10 @@
 <script setup>
-  import RepositoryDetails from "../components/RepositoryDetails.vue"
+import RepositoryDetails from "../components/RepositoryDetails.vue";
+// import ErrorBoundary from "@/components/ErrorBoundary.vue";
 </script>
 
 <template>
-  <RepositoryDetails />
+  <!-- <ErrorBoundary> -->
+    <RepositoryDetails />
+  <!-- </ErrorBoundary> -->
 </template>
