@@ -1,6 +1,6 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import UserGitHubProfile from './components/UserGitHubProfile.vue'
+import { RouterView } from "vue-router";
+import UserGitHubProfile from "./components/UserGitHubProfile.vue";
 </script>
 
 <template>

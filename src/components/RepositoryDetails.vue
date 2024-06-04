@@ -3,6 +3,7 @@ import { onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
 import { useRepoStore } from "@/stores/repoStore.js";
+import ErrorBoundaryUI from "@/components/ErrorBoundaryUI.vue";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,7 +16,8 @@ import {
 import RepoDetailsSekeleton from "@/components/ui/skeleton/RepoDetailsSekeleton.vue";
 
 const repoStore = useRepoStore();
-const { repoDetails, isLoading, repoName } = storeToRefs(repoStore);
+const { repoDetails, isLoading, repoName, catchedError } =
+  storeToRefs(repoStore);
 const { fetchRepoDetails, updatePageFromRoute } = repoStore;
 
 const route = useRoute();
@@ -23,6 +25,8 @@ const router = useRouter();
 repoName.value = route.params.repoName;
 
 watch(route, updatePageFromRoute);
+
+console.log(catchedError.value);
 
 const handleBackToPreviousPage = () => {
   router.back();
@@ -38,14 +42,15 @@ watch(
 
 onMounted(() => {
   fetchRepoDetails();
-//   updatePageFromRoute();
+  //   updatePageFromRoute();
 });
 </script>
 
 <template>
   <RepoDetailsSekeleton v-if="isLoading" />
+  <ErrorBoundaryUI v-if="catchedError && !isLoading" />
   <section
-    v-else-if="!isLoading && repoDetails"
+    v-else-if="!isLoading && repoDetails && !catchedError"
     class="flex w-full pt-20 justify-center"
   >
     <Card

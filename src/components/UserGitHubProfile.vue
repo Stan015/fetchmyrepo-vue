@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import ProfileDetailsSkeleton from "@/components/ui/skeleton/ProfileDetailsSkeleton.vue"
+import ProfileDetailsSkeleton from "@/components/ui/skeleton/ProfileDetailsSkeleton.vue";
 import { Icon } from "@iconify/vue";
 import {
   Card,
@@ -13,7 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const userProfile = ref([]);
-const isLoading = ref(false)
+const isLoading = ref(false);
 
 const fetchUserGithubProfile = async () => {
   isLoading.value = true;
@@ -28,7 +28,7 @@ const fetchUserGithubProfile = async () => {
     });
 
     if (!response) {
-      throw new Error("failed to fetch user github profile")
+      throw new Error("failed to fetch user github profile");
     }
 
     const data = await response.json();
@@ -39,7 +39,7 @@ const fetchUserGithubProfile = async () => {
   } catch (error) {
     console.log(error.message);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 };
 
@@ -55,14 +55,15 @@ onMounted(() => {
 <template>
   <ProfileDetailsSkeleton v-if="isLoading" />
   <div v-else class="flex flex-col w-full items-center gap-6 pt-10">
-    <Card
-      class="flex flex-col items-center max-md:w-4/5 max-lg:w-3/5 lg:w-3/6"
-    >
-      <CardHeader class="flex flex-row gap-4 justify-center ">
+    <Card class="flex flex-col items-center max-md:w-4/5 max-lg:w-3/5 lg:w-3/6">
+      <CardHeader class="flex flex-row gap-4 justify-center">
         <div class="">
           <div class="flex gap-4 items-center justify-center mb-2">
             <Avatar class="w-10 h-10">
-              <AvatarImage v-if="userProfile.avatar_url" :src="userProfile.avatar_url" />
+              <AvatarImage
+                v-if="userProfile.avatar_url"
+                :src="userProfile.avatar_url"
+              />
               <AvatarFallback>SA</AvatarFallback>
             </Avatar>
             <CardTitle class="">{{ userProfile.name }}</CardTitle>
@@ -84,7 +85,7 @@ onMounted(() => {
         class="flex w-full gap-4 items-center justify-center text-center"
       >
         <p
-          class="transition-all text-[1.8rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1  rounded-sm hover:bg-violet-800 cursor-pointer"
+          class="transition-all text-[1.8rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm hover:bg-violet-800 cursor-pointer"
           @click="handleEmailClick"
           tabIndex="0"
         >
@@ -102,7 +103,7 @@ onMounted(() => {
           href="https://www.linkedin.com/in/stanley-azi-475044217/"
           target="_blank"
           rel="noopener noreferrer"
-          class="transition-all text-[1.7rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2  rounded-sm hover:bg-violet-800 p-[1px]"
+          class="transition-all text-[1.7rem] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm hover:bg-violet-800 p-[1px]"
         >
           <Icon icon="ri:linkedin-fill" />
         </a>

@@ -47,6 +47,9 @@ importers:
       vue:
         specifier: ^3.4.21
         version: 3.4.27
+      vue-error-boundary:
+        specifier: ^2.0.3
+        version: 2.0.3
       vue-router:
         specifier: ^4.3.0
         version: 4.3.2(vue@3.4.27)
@@ -2058,6 +2061,9 @@ packages:
     peerDependenciesMeta:
       '@vue/composition-api':
         optional: true
+
+  vue-error-boundary@2.0.3:
+    resolution: {integrity: sha512-75AMMaMA7PedgZiP7vumvmrDEeB0zQes45wGpUVUhJpFs2zKXoNRuRnT0Sy4BZwmrPOj9xtba/jWUw4oZvh6Zw==}
 
   vue-eslint-parser@9.4.2:
     resolution: {integrity: sha512-Ry9oiGmCAK91HrKMtCrKFWmSFWvYkpGglCeFAIqDdr9zdXmMMpJOmUJS7WWsW7fX81h6mwHmUZCQQ1E0PkSwYQ==}
@@ -4157,6 +4163,12 @@ snapshots:
   vue-demi@0.14.7(vue@3.4.27):
     dependencies:
       vue: 3.4.27
+
+  vue-error-boundary@2.0.3:
+    dependencies:
+      vue: 3.4.27
+    transitivePeerDependencies:
+      - typescript
 
   vue-eslint-parser@9.4.2(eslint@8.57.0):
     dependencies:

@@ -4,9 +4,9 @@ import { storeToRefs } from "pinia";
 import { useCurrentPageStore } from "@/stores/pageStore.js";
 import { useRepoStore } from "@/stores/repoStore.js";
 import { RouterLink, useRoute } from "vue-router";
+import ErrorBoundaryUI from "@/components/ErrorBoundaryUI.vue";
 import {
   Pagination,
-  // PaginationList,
   PaginationNext,
   PaginationPrev,
 } from "@/components/ui/pagination";
@@ -26,8 +26,14 @@ const pageStore = useCurrentPageStore();
 const { page, totalPages } = storeToRefs(pageStore);
 
 const repoStore = useRepoStore();
-const { isLoading, filteredRepos, reposPerPage, searchQuery, filterQuery } =
-  storeToRefs(repoStore);
+const {
+  isLoading,
+  filteredRepos,
+  reposPerPage,
+  searchQuery,
+  filterQuery,
+  catchedError,
+} = storeToRefs(repoStore);
 const { fetchRepositories, updatePageFromRoute } = repoStore;
 
 onMounted(() => {
@@ -76,7 +82,9 @@ const nextBtnStyle = computed(() => {
 </script>
 
 <template>
+  <ErrorBoundaryUI v-if="catchedError" />
   <main
+    v-else
     class="flex flex-col w-full place-items-center mb-10 justify-between min-h-full gap-6 pt-10"
   >
     <div
@@ -113,6 +121,9 @@ const nextBtnStyle = computed(() => {
         </CardDescription>
       </CardHeader>
       <RepoListSkeleton v-if="isLoading" />
+      <h2 v-if="!isLoading && displayedReposPerPage.length === 0" class="text-[2rem]">
+        No Repository matched search query.
+      </h2>
       <CardContent v-else class="flex justify-center h-full w-full">
         <ul
           class="flex w-full justify-center text-center gap-4 h-full flex-wrap"

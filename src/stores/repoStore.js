@@ -7,6 +7,7 @@ export const useRepoStore = defineStore("repoStore", () => {
   const repositories = ref([]);
   const reposPerPage = ref(8);
   const repoDetails = ref(null);
+  const catchedError = ref(null);
   const isLoading = ref(false);
   const repoName = ref(null);
   const searchQuery = ref("");
@@ -19,16 +20,16 @@ export const useRepoStore = defineStore("repoStore", () => {
   const router = useRouter();
 
   if (route.params.pageNumber) {
-    page.value = parseInt(route.params.pageNumber)
+    page.value = parseInt(route.params.pageNumber);
   }
 
   watch(page, (newPage) => {
-    router.push({ name: 'page', params: { pageNumber: newPage } });
+    router.push({ name: "page", params: { pageNumber: newPage } });
   });
 
   const filteredRepos = computed(() => {
     return repositories.value.filter((repo) => {
-        page.value = 1;
+      page.value = 1;
 
       const languageMatch =
         repo.language &&
@@ -69,6 +70,7 @@ export const useRepoStore = defineStore("repoStore", () => {
 
       totalPages.value = Math.ceil(data.length / reposPerPage.value);
     } catch (error) {
+      catchedError.value = error;
       console.log(error.message);
     } finally {
       isLoading.value = false;
@@ -90,7 +92,7 @@ export const useRepoStore = defineStore("repoStore", () => {
         }
       );
 
-      if (!response) {
+      if (!response.ok) {
         throw new Error("Failed to fetch repository details");
       }
 
@@ -98,6 +100,7 @@ export const useRepoStore = defineStore("repoStore", () => {
 
       repoDetails.value = data;
     } catch (error) {
+      catchedError.value = error;
       console.log(error.message);
     } finally {
       isLoading.value = false;
@@ -117,12 +120,13 @@ export const useRepoStore = defineStore("repoStore", () => {
     filteredRepos,
     reposPerPage,
     repoDetails,
+    catchedError,
     isLoading,
     repoName,
     searchQuery,
     filterQuery,
     fetchRepositories,
     fetchRepoDetails,
-    updatePageFromRoute
+    updatePageFromRoute,
   };
 });
